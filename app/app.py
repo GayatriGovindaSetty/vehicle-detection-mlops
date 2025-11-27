@@ -325,4 +325,13 @@ with gr.Blocks(title="Vehicle Detection System", theme=gr.themes.Soft()) as demo
 
 if __name__ == "__main__":
     print("\n🌐 Starting Gradio server...")
-    demo.launch()
+    # Auto-detect environment and configure accordingly
+    import os
+    is_spaces = os.getenv("SPACE_ID") is not None
+    
+    if is_spaces:
+        # Running on HF Spaces
+        demo.launch(share=False)
+    else:
+        # Running locally or other environment
+        demo.launch(server_name="0.0.0.0", server_port=7860, share=False)
