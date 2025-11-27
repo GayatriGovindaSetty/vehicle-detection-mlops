@@ -8,7 +8,7 @@ on:
       - 'src/**'
       - 'config/**'
       - 'docker/Dockerfile'
-      - 'requirements.txt'
+      - 'requirements-prod.txt'
   workflow_dispatch:
 
 jobs:
@@ -155,7 +155,7 @@ jobs:
         cp -r ../src/* ./src/ 2>/dev/null || cp -r ../src ./
         cp -r ../config/* ./config/ 2>/dev/null || cp -r ../config ./
         cp ../docker/Dockerfile ./Dockerfile
-        cp ../requirements.txt .
+        cp ../requirements-prod.txt .
         cp ../README.md .
         
         # Create .dockerignore
