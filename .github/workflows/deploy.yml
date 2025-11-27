@@ -119,13 +119,14 @@ jobs:
         PYTHON_SCRIPT
         
         # Check if space exists using Python API
-        python << 'PYTHON_SCRIPT'
+        python << PYTHON_SCRIPT
         import os
         import sys
         from huggingface_hub import HfApi
         
         api = HfApi()
-        space_name = os.environ['SPACE_NAME']
+        hf_username = os.environ.get('HF_USERNAME')
+        space_name = f"{hf_username}/vehicle-detection"
         
         try:
             api.repo_info(repo_id=space_name, repo_type="space")
