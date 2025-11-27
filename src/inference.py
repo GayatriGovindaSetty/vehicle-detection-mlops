@@ -20,7 +20,15 @@ class VehicleDetector:
         
         logger.info(f"Loading model from {self.model_path}")
         self.model = YOLO(self.model_path)
-        self.class_names = config.data.class_names
+        
+        # Get class names from the model itself (handles both custom and COCO models)
+        if hasattr(self.model, 'names') and self.model.names:
+            self.class_names = list(self.model.names.values()) if isinstance(self.model.names, dict) else self.model.names
+            logger.info(f"Model loaded with {len(self.class_names)} classes: {self.class_names}")
+        else:
+            # Fallback to config class names
+            self.class_names = config.data.class_names
+            logger.warning(f"Using config class names: {self.class_names}")
         
     def detect(self, image: Union[str, np.ndarray], return_annotated: bool = True):
         """
@@ -38,14 +46,18 @@ class VehicleDetector:
             image,
             conf=self.conf_threshold,
             iou=self.iou_threshold,
-            max_det=config.deployment.max_detections
+            max_det=config.deployment.max_detections,
+            verbose=False
         )
         
-        if return_annotated:
-            annotated_image = self.annotate_image(image, results[0])
-            return results[0], annotated_image
+        result = results[0]
+        logger.info(f"Detection completed: {len(result.boxes)} objects detected")
         
-        return results[0]
+        if return_annotated:
+            annotated_image = self.annotate_image(image, result)
+            return result, annotated_image
+        
+        return result
     
     def annotate_image(self, image: Union[str, np.ndarray], result) -> np.ndarray:
         """
@@ -64,9 +76,9 @@ class VehicleDetector:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         else:
             img = image.copy()
-            if len(img.shape) == 3 and img.shape[2] == 3:
-                # Assume BGR, convert to RGB
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            # Gradio provides RGB images, no conversion needed
+            if not isinstance(img, np.ndarray):
+                img = np.array(img)
         
         # Draw bounding boxes
         for box in result.boxes:
@@ -74,10 +86,29 @@ class VehicleDetector:
             x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
             conf = float(box.conf.cpu().numpy())
             class_id = int(box.cls.cpu().numpy())
-            label = self.class_names[class_id]
+            
+            # Safely get class name
+            if class_id < len(self.class_names):
+                label = self.class_names[class_id]
+            else:
+                label = f"class_{class_id}"
+                logger.warning(f"Unknown class_id: {class_id}, using {label}")
+            
+            # Use different colors for different classes
+            colors = [
+                (255, 0, 0),    # Red
+                (0, 255, 0),    # Green
+                (0, 0, 255),    # Blue
+                (255, 255, 0),  # Yellow
+                (255, 0, 255),  # Magenta
+                (0, 255, 255),  # Cyan
+                (255, 128, 0),  # Orange
+                (128, 0, 255),  # Purple
+            ]
+            color = colors[class_id % len(colors)]
             
             # Draw rectangle
-            cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 2)
+            cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
             
             # Draw label with background
             label_text = f'{label}: {conf:.2f}'
@@ -87,7 +118,7 @@ class VehicleDetector:
             
             cv2.rectangle(
                 img, (x1, y1 - text_height - 10), 
-                (x1 + text_width, y1), (255, 0, 0), -1
+                (x1 + text_width, y1), color, -1
             )
             
             cv2.putText(
