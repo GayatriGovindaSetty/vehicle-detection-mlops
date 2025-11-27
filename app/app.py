@@ -325,8 +325,4 @@ with gr.Blocks(title="Vehicle Detection System", theme=gr.themes.Soft()) as demo
 
 if __name__ == "__main__":
     print("\n🌐 Starting Gradio server...")
-    demo.launch(
-        server_name="0.0.0.0",
-        server_port=7860,
-        share=False
-    )
+    demo.launch()
