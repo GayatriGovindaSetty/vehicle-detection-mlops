@@ -129,7 +129,7 @@ class DataPreparator:
         return yaml_path
 
 if __name__ == "__main__":
-    from config import config
+    from src.config import config
     
     # Example usage
     preparator = DataPreparator(
