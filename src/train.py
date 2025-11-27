@@ -5,7 +5,7 @@ from ultralytics import YOLO
 import wandb
 import logging
 from datetime import datetime
-from config import config
+from .config import config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
