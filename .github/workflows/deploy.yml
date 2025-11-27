@@ -29,7 +29,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install huggingface_hub
+        pip install huggingface_hub[cli]
+        
+    - name: Verify huggingface-cli installation
+      run: |
+        which huggingface-cli || echo "huggingface-cli not in PATH"
+        python -c "import huggingface_hub; print(f'huggingface_hub version: {huggingface_hub.__version__}')"
     
     - name: Configure Git
       run: |
@@ -84,7 +89,7 @@ jobs:
         Built with Ultralytics YOLOv8, Gradio, and Docker.
         
         ## Source Code
-        [GitHub Repository](https://github.com/GayatriGovindaSetty/vehicle-detection-mlops)
+        [GitHub Repository](https://github.com/yourusername/vehicle-detection-mlops)
         EOF
     
     - name: Push to Hugging Face Space
@@ -103,20 +108,41 @@ jobs:
         
         echo "🚀 Deploying to Hugging Face Space: $SPACE_NAME"
         
-        # Login to Hugging Face
-        huggingface-cli login --token $HF_TOKEN
+        # Login to Hugging Face using Python API
+        python << 'PYTHON_SCRIPT'
+        import os
+        from huggingface_hub import HfApi, login
         
-        # Check if space exists
-        if huggingface-cli repo info "$SPACE_NAME" --repo-type space >/dev/null 2>&1; then
-          echo "✅ Space exists, cloning..."
-          git clone https://huggingface.co/spaces/$SPACE_NAME hf-space
-        else
-          echo "❌ Space does not exist!"
-          echo "Please create it manually at: https://huggingface.co/new-space"
-          echo "Space name: vehicle-detection"
-          echo "SDK: Docker"
-          exit 1
-        fi
+        token = os.environ['HF_TOKEN']
+        login(token=token, add_to_git_credential=True)
+        print("✅ Logged in to Hugging Face")
+        PYTHON_SCRIPT
+        
+        # Check if space exists using Python API
+        python << 'PYTHON_SCRIPT'
+        import os
+        import sys
+        from huggingface_hub import HfApi
+        
+        api = HfApi()
+        space_name = os.environ['SPACE_NAME']
+        
+        try:
+            api.repo_info(repo_id=space_name, repo_type="space")
+            print(f"✅ Space exists: {space_name}")
+        except Exception as e:
+            print(f"❌ Space does not exist: {space_name}")
+            print(f"Error: {e}")
+            print("")
+            print("Please create it manually at: https://huggingface.co/new-space")
+            print("Space name: vehicle-detection")
+            print("SDK: Docker")
+            sys.exit(1)
+        PYTHON_SCRIPT
+        
+        # Clone the space
+        echo "📥 Cloning Space..."
+        git clone https://huggingface.co/spaces/$SPACE_NAME hf-space
         
         cd hf-space
         
