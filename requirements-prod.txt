@@ -1,0 +1,23 @@
+# Production Requirements for Hugging Face Deployment
+# Use this in docker/Dockerfile
+
+# Core ML Libraries
+ultralytics==8.0.220
+torch==2.1.0
+torchvision==0.16.0
+
+# Computer Vision - use headless for production
+opencv-python-headless==4.8.1.78
+pillow==10.1.0
+
+# Data Processing
+numpy==1.24.3
+pyyaml==6.0.1
+
+# Web Application - Compatible versions
+gradio==4.44.0
+huggingface-hub==0.24.6
+python-multipart==0.0.6
+
+# Utilities
+tqdm==4.66.1
