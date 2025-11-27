@@ -4,9 +4,19 @@ __author__ = "Your Name"
 
 from .config import config
 from .inference import VehicleDetector
-from .train import ModelTrainer
-from .data_preparation import DataPreparator
-from .evaluate import ModelEvaluator
+
+# Lazy imports for training components (not needed in production)
+def __getattr__(name):
+    if name == 'ModelTrainer':
+        from .train import ModelTrainer
+        return ModelTrainer
+    elif name == 'DataPreparator':
+        from .data_preparation import DataPreparator
+        return DataPreparator
+    elif name == 'ModelEvaluator':
+        from .evaluate import ModelEvaluator
+        return ModelEvaluator
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 __all__ = [
     'config',
