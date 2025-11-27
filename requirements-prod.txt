@@ -17,7 +17,7 @@ pyyaml==6.0.1
 # Web Application - Compatible versions
 gradio==4.44.0
 huggingface-hub==0.24.6
-python-multipart==0.0.6
+python-multipart>=0.0.9
 
 # Utilities
 tqdm==4.66.1
