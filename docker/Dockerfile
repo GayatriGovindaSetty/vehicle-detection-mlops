@@ -22,9 +22,7 @@ RUN pip install --no-cache-dir -r requirements-prod.txt
 # Copy application code
 COPY src/ ./src/
 COPY app/ ./app/
-
-# Copy config if it exists (optional)
-COPY config/ ./config/ 2>/dev/null || mkdir -p config
+COPY config/ ./config/
 
 # Create necessary directories
 RUN mkdir -p models logs data/raw data/processed
