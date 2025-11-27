@@ -1,0 +1,53 @@
+# Training Configuration for Vehicle Detection
+
+# Model
+model: yolov8n.pt  # Options: yolov8n, yolov8s, yolov8m, yolov8l, yolov8x
+
+# Training Parameters
+epochs: 30
+batch: 16
+imgsz: 640
+device: ''  # Auto-detect cuda/cpu
+
+# Optimizer
+optimizer: AdamW
+lr0: 0.01
+lrf: 0.01
+momentum: 0.937
+weight_decay: 0.0005
+
+# Data Augmentation
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4
+degrees: 0.0
+translate: 0.1
+scale: 0.5
+shear: 0.0
+perspective: 0.0
+flipud: 0.0
+fliplr: 0.5
+mosaic: 1.0
+mixup: 0.0
+
+# Training Settings
+patience: 10
+save: true
+save_period: -1
+val: true
+plots: true
+verbose: true
+
+# Workers
+workers: 8
+
+# Project Settings
+project: models
+name: vehicle-detection
+
+# Advanced
+cos_lr: false
+close_mosaic: 10
+amp: true
+fraction: 1.0
+profile: false

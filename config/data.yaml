@@ -1,0 +1,25 @@
+# YOLO Data Configuration for Vehicle Detection
+
+# Dataset paths (relative to this file or absolute)
+path: ../data/processed  # Root directory
+train: train/images      # Train images (relative to 'path')
+val: val/images         # Validation images (relative to 'path')
+test: test/images       # Test images (relative to 'path')
+
+# Number of classes
+nc: 8
+
+# Class names (in order, matching label indices)
+names:
+  0: auto
+  1: bus
+  2: car
+  3: lcv
+  4: motorcycle
+  5: multiaxle
+  6: tractor
+  7: truck
+
+# Additional settings (optional)
+# Download dataset script (if applicable)
+# download: scripts/download_data.sh
