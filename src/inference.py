@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Tuple, Union
 from ultralytics import YOLO
 import logging
-from config import config
+from src.config import config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
