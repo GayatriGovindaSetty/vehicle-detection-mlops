@@ -70,8 +70,14 @@ try:
     print(f"📦 Loading model: {model_path}")
     detector = VehicleDetector(model_path=model_path)
     print("✅ Detector initialized successfully!")
+    print(f"📋 Model has {len(detector.class_names)} classes:")
+    print(f"   {', '.join(detector.class_names)}")
+    print(f"⚙️  Confidence threshold: {detector.conf_threshold}")
+    print(f"⚙️  IOU threshold: {detector.iou_threshold}")
 except Exception as e:
+    import traceback
     print(f"❌ Could not load model: {e}")
+    print(traceback.format_exc())
     detector = None
 
 print("="*60)
@@ -99,11 +105,16 @@ def detect_vehicles(image, conf_threshold, iou_threshold):
     detector.iou_threshold = iou_threshold
     
     try:
+        print(f"🔍 Running detection with conf={conf_threshold}, iou={iou_threshold}")
+        print(f"📊 Image shape: {image.shape if hasattr(image, 'shape') else 'unknown'}")
+        
         # Run detection
         result, annotated_image = detector.detect(image, return_annotated=True)
         
         # Get statistics
         stats = detector.get_detection_stats(result)
+        
+        print(f"✅ Detection complete: {stats['total_detections']} objects found")
         
         # Format statistics for display
         stats_text = f"""
@@ -111,23 +122,35 @@ def detect_vehicles(image, conf_threshold, iou_threshold):
 
 **Total Detections:** {stats['total_detections']}
 
-**Detected Vehicles by Class:**
+**Confidence Threshold:** {conf_threshold}
+**IOU Threshold:** {iou_threshold}
 """
         
-        for class_name, count in stats['class_counts'].items():
-            stats_text += f"\n- {class_name}: {count}"
-        
-        stats_text += f"\n\n**Average Confidence:** {stats['average_confidence']:.2%}"
-        
         if stats['total_detections'] > 0:
+            stats_text += "\n**Detected Objects by Class:**\n"
+            for class_name, count in stats['class_counts'].items():
+                stats_text += f"\n- {class_name}: {count}"
+            
+            stats_text += f"\n\n**Average Confidence:** {stats['average_confidence']:.2%}"
+            
             stats_text += "\n\n**Individual Detections:**\n"
             for i, det in enumerate(stats['detections'], 1):
-                stats_text += f"\n{i}. {det['class']} (confidence: {det['confidence']:.2%})"
+                stats_text += f"\n{i}. {det['class']} (confidence: {det['confidence']:.2%}, bbox: {det['bbox']})"
+        else:
+            stats_text += "\n\n⚠️ **No objects detected!**\n\n"
+            stats_text += "**Troubleshooting tips:**\n"
+            stats_text += "- Try lowering the confidence threshold\n"
+            stats_text += "- Ensure the image contains vehicles\n"
+            stats_text += "- Check that the image is clear and well-lit\n"
+            stats_text += f"- Model classes: {', '.join(detector.class_names[:10])}{'...' if len(detector.class_names) > 10 else ''}"
         
         return annotated_image, stats_text
         
     except Exception as e:
-        return None, f"❌ Detection failed: {str(e)}"
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"❌ Detection error: {error_details}")
+        return None, f"❌ Detection failed: {str(e)}\n\nSee console for details."
 
 def detect_from_video(video_path, conf_threshold, iou_threshold, skip_frames):
     """
