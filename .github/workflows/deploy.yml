@@ -36,12 +36,17 @@ jobs:
         git config --global user.email "github-actions@github.com"
         git config --global user.name "GitHub Actions"
     
-    # REMOVED: Model existence check since model is on Hugging Face now
-    # The app will download the model from HF at runtime
-    
-    - name: Create Hugging Face Space files
+    - name: Verify deployment configuration
       run: |
-        # Create README.md for Hugging Face Space
+        echo "📋 Deployment Configuration:"
+        echo "   HF Username: ${{ secrets.HF_USERNAME }}"
+        echo "   Target Space: ${{ secrets.HF_USERNAME }}/vehicle-detection"
+        echo "   Model source: Hugging Face Hub (downloaded at runtime)"
+        echo ""
+        echo "✅ No local model file needed - model will be downloaded from HF Hub"
+    
+    - name: Create Hugging Face Space README
+      run: |
         cat > README.md << 'EOF'
         ---
         title: Vehicle Detection System
@@ -79,7 +84,7 @@ jobs:
         Built with Ultralytics YOLOv8, Gradio, and Docker.
         
         ## Source Code
-        [GitHub Repository](https://github.com/yourusername/vehicle-detection-mlops)
+        [GitHub Repository](https://github.com/GayatriGovindaSetty/vehicle-detection-mlops)
         EOF
     
     - name: Push to Hugging Face Space
@@ -115,16 +120,18 @@ jobs:
         
         cd hf-space
         
-        # Copy application files (NOT models/ since model is on HF Hub)
-        echo "📦 Copying files..."
-        cp -r ../app .
-        cp -r ../src .
-        cp -r ../config .
+        # Copy application files (NO models/ directory - model downloads from HF Hub)
+        echo "📦 Copying application files..."
+        mkdir -p app src config
+        
+        cp -r ../app/* ./app/ 2>/dev/null || cp -r ../app ./
+        cp -r ../src/* ./src/ 2>/dev/null || cp -r ../src ./
+        cp -r ../config/* ./config/ 2>/dev/null || cp -r ../config ./
         cp ../docker/Dockerfile ./Dockerfile
         cp ../requirements.txt .
         cp ../README.md .
         
-        # Create .dockerignore if not exists
+        # Create .dockerignore
         cat > .dockerignore << 'DOCKERIGNORE'
         __pycache__
         *.pyc
@@ -139,14 +146,19 @@ jobs:
         notebooks/
         data/
         logs/
+        models/
         .venv
         venv/
         ENV/
         DOCKERIGNORE
         
-        # Show what we're deploying
+        echo ""
         echo "📄 Files to deploy:"
         ls -la
+        echo ""
+        echo "📁 Directory structure:"
+        find . -type d -maxdepth 2 | grep -v ".git"
+        echo ""
         
         # Commit and push
         git add .
@@ -162,26 +174,58 @@ jobs:
           echo "✅ Deployment successful!"
         fi
     
-    - name: Update deployment status
+    - name: Deployment Summary
       if: success()
       run: |
-        echo "🎉 Deployment completed successfully!"
-        echo "🌐 View your space at: https://huggingface.co/spaces/${{ secrets.HF_USERNAME }}/vehicle-detection"
         echo ""
-        echo "⏳ Note: First startup may take 1-2 minutes while model downloads from Hugging Face Hub"
+        echo "🎉 ================================"
+        echo "🎉 DEPLOYMENT SUCCESSFUL!"
+        echo "🎉 ================================"
+        echo ""
+        echo "🌐 Your app is live at:"
+        echo "   https://huggingface.co/spaces/${{ secrets.HF_USERNAME }}/vehicle-detection"
+        echo ""
+        echo "⏳ First startup timeline:"
+        echo "   1. Docker image building: ~3-5 minutes"
+        echo "   2. Model download from HF Hub: ~30 seconds"
+        echo "   3. App initialization: ~10 seconds"
+        echo "   Total: ~5-6 minutes for first deployment"
+        echo ""
+        echo "📝 Next steps:"
+        echo "   1. Wait for Space to finish building"
+        echo "   2. Check Space logs if any issues"
+        echo "   3. Test with sample images/videos"
+        echo ""
     
     - name: Notify on failure
       if: failure()
       run: |
-        echo "❌ Deployment failed!"
+        echo ""
+        echo "❌ ================================"
+        echo "❌ DEPLOYMENT FAILED"
+        echo "❌ ================================"
         echo ""
         echo "Common issues:"
-        echo "1. HF_TOKEN or HF_USERNAME not set in GitHub Secrets"
-        echo "2. Space doesn't exist - create manually at https://huggingface.co/new-space"
-        echo "3. Space SDK is not set to 'Docker'"
-        echo "4. Token doesn't have write permissions"
+        echo "1. GitHub Secrets not set:"
+        echo "   - Go to: Settings → Secrets and variables → Actions"
+        echo "   - Add: HF_TOKEN (your Hugging Face token)"
+        echo "   - Add: HF_USERNAME (your Hugging Face username)"
         echo ""
-        echo "Please check the logs above for specific errors"
+        echo "2. Space doesn't exist:"
+        echo "   - Create at: https://huggingface.co/new-space"
+        echo "   - Name: vehicle-detection"
+        echo "   - SDK: Docker (IMPORTANT!)"
+        echo "   - Visibility: Public"
+        echo ""
+        echo "3. Token permissions:"
+        echo "   - Token must have WRITE access"
+        echo "   - Regenerate at: https://huggingface.co/settings/tokens"
+        echo ""
+        echo "4. Space SDK incorrect:"
+        echo "   - Must be 'Docker', not 'Gradio' or 'Streamlit'"
+        echo ""
+        echo "Please check the logs above for specific errors."
+        echo ""
 
   notify:
     name: Deployment Summary
@@ -190,32 +234,11 @@ jobs:
     if: always()
     
     steps:
-    - name: Send deployment notification
+    - name: Final Status
       run: |
         if [ "${{ needs.deploy.result }}" == "success" ]; then
-          echo "✅ ================================"
-          echo "✅ DEPLOYMENT SUCCESSFUL"
-          echo "✅ ================================"
-          echo ""
-          echo "🌐 Your app is live at:"
-          echo "   https://huggingface.co/spaces/${{ secrets.HF_USERNAME }}/vehicle-detection"
-          echo ""
-          echo "📝 Next steps:"
-          echo "   1. Wait 1-2 minutes for first startup"
-          echo "   2. Model will download from Hugging Face Hub automatically"
-          echo "   3. Test the app with sample images/videos"
-          echo ""
+          echo "✅ Deployment completed successfully!"
+          echo "🌐 https://huggingface.co/spaces/${{ secrets.HF_USERNAME }}/vehicle-detection"
         else
-          echo "❌ ================================"
-          echo "❌ DEPLOYMENT FAILED"
-          echo "❌ ================================"
-          echo ""
-          echo "Please check the deployment job logs for details"
-          echo ""
-          echo "Troubleshooting:"
-          echo "   1. Verify GitHub Secrets are set (HF_TOKEN, HF_USERNAME)"
-          echo "   2. Ensure Space exists at https://huggingface.co/spaces/${{ secrets.HF_USERNAME }}/vehicle-detection"
-          echo "   3. Verify Space SDK is set to 'Docker'"
-          echo "   4. Check token has write permissions"
-          echo ""
+          echo "❌ Deployment failed - check deploy job logs for details"
         fi
