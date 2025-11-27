@@ -2,7 +2,7 @@ import json
 import logging
 from pathlib import Path
 from ultralytics import YOLO
-from config import config
+from .config import config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
