@@ -154,7 +154,7 @@ GitHub Actions will automatically:
 
 Your app will be live at:
 ```
-https://huggingface.co/spaces/YOUR_USERNAME/vehicle-detection
+https://huggingface.co/spaces/gayatrigovindasetty/vehicle-detection
 ```
 
 ## 📁 Project Structure
@@ -263,7 +263,7 @@ Device: GPU (CUDA)
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/vehicle-detection-mlops.git
+git clone https://github.com/GayatriGovindaSetty/vehicle-detection-mlops.git
 cd vehicle-detection-mlops
 
 # Install in development mode
@@ -373,7 +373,7 @@ export WANDB_API_KEY=your_key_here
 
 After training, view your experiments at:
 ```
-https://wandb.ai/your-username/vehicle-detection-mlops
+https://wandb.ai/gayatrigovindasetty/vehicle-detection-mlops
 ```
 
 Tracked metrics:
@@ -422,7 +422,7 @@ huggingface-cli login
 huggingface-cli repo create vehicle-detection --type space --space_sdk docker
 
 # Clone space
-git clone https://huggingface.co/spaces/YOUR_USERNAME/vehicle-detection hf-space
+git clone https://huggingface.co/spaces/gayatrigovindasetty/vehicle-detection hf-space
 
 # Copy files
 cd hf-space
@@ -601,10 +601,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📧 Contact & Support
 
-- **Author**: Your Name
-- **Email**: your.email@example.com
-- **GitHub**: [@yourusername](https://github.com/yourusername)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/vehicle-detection-mlops/issues)
+- **Author**: Gayatri Govinda Setty
+- **Email**: gayatrigovindasetty@gmail.com
+- **GitHub**: [@GayatriGovindaSetty](https://github.com/GayatriGovindaSetty)
+- **Issues**: [GitHub Issues](https://github.com/GayatriGovindaSetty/vehicle-detection-mlops/issues)
 
 ## 🌟 Star History
 
@@ -620,8 +620,4 @@ If you find this project helpful, please consider giving it a ⭐ on GitHub!
 - **Inference Speed**: 50 FPS (GPU)
 - **Model Accuracy**: mAP@0.5 85%+
 
----
 
-**Made with ❤️ for the Computer Vision Community**
-
-*Last Updated: 2024*
