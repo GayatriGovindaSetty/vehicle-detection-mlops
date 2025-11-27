@@ -1,7 +1,7 @@
 # 🚗 Real-Time Object Detection for Autonomous Robotics
 
-[![CI Pipeline](https://github.com/yourusername/vehicle-detection-mlops/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/vehicle-detection-mlops/actions/workflows/ci.yml)
-[![Deploy](https://github.com/yourusername/vehicle-detection-mlops/actions/workflows/deploy.yml/badge.svg)](https://github.com/yourusername/vehicle-detection-mlops/actions/workflows/deploy.yml)
+[![CI Pipeline](https://github.com/GayatriGovindaSetty/vehicle-detection-mlops/actions/workflows/ci.yml/badge.svg)](https://github.com/GayatriGovindaSetty/vehicle-detection-mlops/actions/workflows/ci.yml)
+[![Deploy](https://github.com/GayatriGovindaSetty/vehicle-detection-mlops/actions/workflows/deploy.yml/badge.svg)](https://github.com/GayatriGovindaSetty/vehicle-detection-mlops/actions/workflows/deploy.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
